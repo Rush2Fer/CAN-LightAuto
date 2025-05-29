@@ -1,5 +1,5 @@
 /*
- * uart_efr32.h
+ * uart_efr32.c
  *
  *  Created on: May 28, 2025
  *      Author: abelk

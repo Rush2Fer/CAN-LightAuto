@@ -27,6 +27,7 @@
 #include "uart_efr32.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "can_driver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,7 +58,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// Override prinft stdio to uart
+// Override prinft stdio to uart2
 void __io_putchar(uint8_t ch) {
     HAL_UART_Transmit(&huart2, &ch, 1, 1);
 }
@@ -96,7 +97,18 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   uart_efr32_start_reception();
-  uint16_t light_level=0;
+  uint8_t light_level=0;
+
+#if IS_SENDER != 1
+  CAN_ConfigFilter(); // Config receiver filter
+
+#endif
+
+  if (HAL_CAN_Start(&hcan1) != HAL_OK)
+  {
+      Error_Handler();
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,8 +116,11 @@ int main(void)
   while (1)
   {
 
+#if IS_SENDER == 1
 	  light_level = uart_efr32_get_luminosity();
 	  printf("\nLEVEL: %d\n",light_level);
+	  CAN_SendSensorState(light_level);
+#endif
 	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 

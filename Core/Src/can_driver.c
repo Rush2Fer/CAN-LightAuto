@@ -8,6 +8,7 @@
 #include "can_driver.h"
 #include <stdint.h>
 #include "can.h"
+#include <stdio.h>
 
 extern CAN_HandleTypeDef hcan1;
 
@@ -20,17 +21,21 @@ static CAN_TxHeaderTypeDef TxHeader = {
     .DLC = 1   // data length: 1 byte
 };
 
-static uint32_t TxMailbox;
-
 // Function to send light state via CAN
 void CAN_SendSensorState(uint8_t state)
 {
+	uint32_t TxMailbox;
     uint8_t TxData[1];
     TxData[0] = state;
+/*    while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0)
+    {
+        HAL_Delay(10);
+    }*/
 
     if (HAL_CAN_AddTxMessage(&hcan1, &TxHeader, TxData, &TxMailbox) != HAL_OK)
     {
-        Error_Handler();
+    	printf("Failed to add TxMessage");
+        //Error_Handler();
     }
 }
 
@@ -51,7 +56,7 @@ void CAN_ConfigFilter(void)
     filter.SlaveStartFilterBank = 14;
 
     // Filter ID shifted by 5 bits according to CAN standard frame format
-    filter.FilterIdHigh = (CAN_STANDARD_ID << 5) & 0xFFFF;
+    filter.FilterIdHigh = (CAN_LIGHT_ID << 5) & 0xFFFF;
     filter.FilterIdLow = 0x0000;
 
     // Mask to compare all 11 bits of standard ID

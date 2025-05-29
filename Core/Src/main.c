@@ -101,14 +101,14 @@ int main(void)
 
 #if IS_SENDER != 1
   CAN_ConfigFilter(); // Config receiver filter
-
+  printf("Filter configured");
 #endif
 
   if (HAL_CAN_Start(&hcan1) != HAL_OK)
   {
+	  printf("Error on CAN");
       Error_Handler();
   }
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -122,6 +122,7 @@ int main(void)
 	  CAN_SendSensorState(light_level);
 #endif
 	  HAL_Delay(1000);
+	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -19,7 +19,7 @@ void CAN_SendSensorState(uint8_t state);
 #else
 void CAN_ConfigFilter(void);
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
-uint8_t get_latest_luminosity(void)
+uint8_t get_latest_luminosity(void);
 #endif
 
 
